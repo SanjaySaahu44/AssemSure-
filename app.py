@@ -29,14 +29,23 @@ def fetch_data():
     try:
         response = table.scan()
         items = response.get("Items", [])
-        # Move 'id' to the first column
+        
+        # Ensure 'id' is the first key in each dictionary
+        reordered_items = []
         for item in items:
-            item.move_to_end("id", last=False)
-        return items
+            if "id" in item:
+                reordered_item = {"id": item["id"]}
+                for k, v in item.items():
+                    if k != "id":
+                        reordered_item[k] = v
+                reordered_items.append(reordered_item)
+            else:
+                reordered_items.append(item)
+                
+        return reordered_items
     except ClientError as e:
         st.error(f"❌ Error reading data: {e.response['Error']['Message']}")
         return []
-
 # Load and display data
 data = fetch_data()
 
