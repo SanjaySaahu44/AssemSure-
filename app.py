@@ -68,4 +68,4 @@ else:
 
     # Show full table
     st.markdown("### 📊 Complete Sensor Data")
-    st.dataframe(data, use_container_width=True))
+    st.dataframe(data, use_container_width=True)
