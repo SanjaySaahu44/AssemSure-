@@ -7,11 +7,11 @@ st.set_page_config(page_title="ASSEMSURE", layout="wide")
 st.title("🤖 ASSEMSURE")
 st.subheader("Real-time monitoring of robotic arm sensors from DynamoDB")
 
-# AWS credentials (you’ll add them securely in Streamlit Cloud)
+# AWS config
 AWS_REGION = os.environ.get("AWS_REGION", "eu-north-1")
-DYNAMODB_TABLE = os.environ.get("DYNAMODB_TABLE", "SensorData")
+DYNAMODB_TABLE = os.environ.get("DYNAMODB_TABLE", "RobotSensorData")
 
-# Initialize DynamoDB
+# Connect to DynamoDB
 try:
     dynamodb = boto3.resource(
         'dynamodb',
@@ -24,23 +24,35 @@ except Exception as e:
     st.error(f"❌ Error connecting to DynamoDB: {e}")
     st.stop()
 
-# Load data
+# Fetch data
 def fetch_data():
     try:
         response = table.scan()
-        return response.get("Items", [])
+        items = response.get("Items", [])
+        # Move 'id' to the first column
+        for item in items:
+            item.move_to_end("id", last=False)
+        return items
     except ClientError as e:
         st.error(f"❌ Error reading data: {e.response['Error']['Message']}")
         return []
 
-if st.button("🔄 Refresh Data"):
-    st.experimental_rerun()
-
+# Load and display data
 data = fetch_data()
 
-# Display data
 if not data:
     st.warning("No data available.")
 else:
-    st.markdown("### 📊 Sensor Data Table")
+    latest = data[-1]  # Show most recent data
+
+    # Show latest individual sensor values
+    st.markdown("### 📟 Latest Sensor Values")
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Torque", latest.get("torque"))
+    col2.metric("Current", latest.get("current"))
+    col3.metric("Vibration", latest.get("vibration"))
+    col4.metric("Label", latest.get("label"))
+
+    # Show full table
+    st.markdown("### 📊 Complete Sensor Data")
     st.dataframe(data, use_container_width=True)
