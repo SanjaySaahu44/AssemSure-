@@ -57,10 +57,10 @@ else:
     # Show latest individual sensor values
     st.markdown("### 📟 Latest Sensor Values")
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Torque", str(latest.get("torque", "N/A")))
-    col2.metric("Current", latest.get("current"))
-    col3.metric("Vibration", latest.get("vibration"))
-    col4.metric("Label", latest.get("label"))
+    col1.metric("Torque", float(latest.get("torque", 0)))
+col2.metric("Current", float(latest.get("current", 0)))
+col3.metric("Vibration", float(latest.get("vibration", 0)))
+col4.metric("Label", str(latest.get("label", "N/A")))
 
     # Show full table
     st.markdown("### 📊 Complete Sensor Data")
