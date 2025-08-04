@@ -62,6 +62,10 @@ else:
     col3.metric("Vibration", float(latest.get("vibration", 0)))
     col4.metric("Label", str(latest.get("label", "N/A")))
 
+    col5, col6 = st.columns(2)
+    col5.metric("Temperature", float(latest.get("temperature", 0)))
+    col6.metric("Noise", float(latest.get("noise", 0)))
+
     # Show full table
     st.markdown("### 📊 Complete Sensor Data")
-    st.dataframe(data, use_container_width=True)
+    st.dataframe(data, use_container_width=True))
